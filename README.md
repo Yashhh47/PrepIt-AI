@@ -1,8 +1,8 @@
-# 🚀 HirePathAI – AI-Powered Interview Preparation Workflow
+# 🚀 PrepIt AI – AI-Powered Interview Preparation Workflow
 
 > **One workflow, zero stress. Get a personalized interview preparation guide in minutes.**
 
-HirePathAI is an **end-to-end n8n automation** project that leverages **AI, APIs, and workflow orchestration** to prepare job seekers for interviews.  
+PrepIt AI is an **end-to-end n8n automation** project that leverages **AI, APIs, and workflow orchestration** to prepare job seekers for interviews.  
 It transforms a simple form submission into a **personalized PDF guide** containing:
 
 - ✅ **Technical & soft skills** required for the role  
