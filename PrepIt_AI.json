@@ -1,0 +1,206 @@
+{
+  "name": "AI Interview prep buddy",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "AI Interview preperation Buddy",
+        "formDescription": "Fill the form as mentioned correctly to get most out of it",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Your Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Your email",
+              "placeholder": "example@gmail.com",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Job Title",
+              "placeholder": "eg. - Full-stack Developer",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Job Description",
+              "placeholder": "atleast 50 words",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "56437475-c277-43d7-bcea-abb9f83c621f",
+      "name": "On form submission",
+      "webhookId": "e13636db-eaf9-4380-9309-1f7ed1bb2488"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=you are an expert interview guide who teaches how to prepare for an interview \nReturn a clean and buetiful HTML code which contains:\n1. 5 techinal and soft skills required for the {{ $json['Job Description'] }}\n2. 10 Potential questions that may be asked in interview according to the {{ $json['Job Description'] }}\n3. detailed roadmap of how to prepare for the {{ $json['Job Title'] }}\nand {{ $json['Job Description'] }}\nOnly return HTML code that can be converted to pdf no extra texts or commentary is required."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "9065838e-71a4-417f-ab13-9a2338d2a720",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yiguRo0a1bUSkJsf",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "URL/HTML to PDF",
+        "convertType": "htmlToPDF",
+        "html": "={{ $json.content.parts[0].text }}",
+        "advancedOptions": {}
+      },
+      "type": "n8n-nodes-pdfco.PDFco Api",
+      "typeVersion": 1,
+      "position": [
+        560,
+        0
+      ],
+      "id": "e8a56f6c-814d-40f2-a7d8-7370c2d752a8",
+      "name": "PDFco Api",
+      "credentials": {
+        "pdfcoApi": {
+          "id": "juTpN6o1f1qzxXmH",
+          "name": "PDF.co account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        768,
+        0
+      ],
+      "id": "546e42fb-d4df-40c0-8ee4-5826b460565d",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json['Your email'] }}",
+        "subject": "Your Personalized Interview Preparation Guide",
+        "message": "=Hey  {{ $('On form submission').item.json['Your Name'] }},<br>\nI hope you are doing great,\nHere is your personolised AI Interview Preparation Guide.<br>\nAll the best for your interview.<br>\n\nThankyou for using our service.<br>\n\nYours Truly,<br>\nPrashant Kawadkar.<br>\n\nYou can download the Guide from here.\n\n\n",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        976,
+        0
+      ],
+      "id": "9aad225c-ffda-434c-86b5-756f52460790",
+      "name": "Send a message",
+      "webhookId": "9fba89d8-41e8-4df6-b26b-567b81ce1db3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "LTVunwhzuTCwN63c",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "PDFco Api",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDFco Api": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3bec7f67-36be-48dd-b0f6-389dfe2885f3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7be76ed648c4d305d3ca5c86f6cd4007ed17c93e3337fc9f9b5a417ce7bd08c3"
+  },
+  "id": "rc50ESdd2075IhNv",
+  "tags": []
+}
